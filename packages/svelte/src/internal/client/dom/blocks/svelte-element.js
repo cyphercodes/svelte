@@ -90,7 +90,8 @@ export function element(node, get_tag, is_svg, render_fn, get_namespace, locatio
 				if (render_fn) {
 					if (hydrating && is_raw_text_element(next_tag)) {
 						// prevent hydration glitches
-						element.append(document.createComment(''));
+						// insert at the beginning so get_first_child finds it
+						element.insertBefore(document.createComment(''), element.firstChild);
 					}
 
 					// If hydrating, use the existing ssr comment as the anchor so that the
