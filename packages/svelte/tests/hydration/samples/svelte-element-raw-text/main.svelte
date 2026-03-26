@@ -1,0 +1,1 @@
+<svelte:element this={"style"}>.test { color: red; }</svelte:element>
