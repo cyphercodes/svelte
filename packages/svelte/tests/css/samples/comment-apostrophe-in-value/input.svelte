@@ -1,0 +1,11 @@
+<div class="foo"></div>
+
+<style>
+	.foo {
+		left: min(
+			calc(1px),
+			/* across rows (so the marker ends at row 1's right edge). Disabled */
+			calc(2px)
+		);
+	}
+</style>

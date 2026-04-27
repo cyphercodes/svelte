@@ -74,6 +74,27 @@ describe('parseCss', () => {
 		assert.equal(ast.children[0].type, 'Rule');
 	});
 
+	it('parses comments with apostrophes inside declaration values', () => {
+		const ast = parseCss(`.foo {
+	left: min(
+		calc(1px),
+		/* across rows (so the marker ends at row 1's right edge). Disabled */
+		calc(2px)
+	);
+}`);
+
+		assert.equal(ast.children.length, 1);
+		const rule = ast.children[0];
+		assert.equal(rule.type, 'Rule');
+		if (rule.type === 'Rule') {
+			const declaration = rule.block.children[0];
+			assert.equal(declaration.type, 'Declaration');
+			if (declaration.type === 'Declaration') {
+				assert.equal(declaration.value.includes("row 1's right edge"), true);
+			}
+		}
+	});
+
 	it('parses complex selectors', () => {
 		const ast = parseCss('div > span + p ~ a { color: red; }');
 		assert.equal(ast.children.length, 1);

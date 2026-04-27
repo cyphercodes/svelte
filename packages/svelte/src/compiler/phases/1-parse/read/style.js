@@ -516,6 +516,13 @@ function read_value(parser) {
 			continue;
 		} else if (char === quote_mark) {
 			quote_mark = null;
+		} else if (quote_mark === null && parser.match('/*')) {
+			const start = parser.index;
+			parser.index += 2;
+			parser.read_until(REGEX_COMMENT_CLOSE);
+			parser.eat('*/', true);
+			value += parser.template.slice(start, parser.index);
+			continue;
 		} else if (char === ')') {
 			in_url = false;
 		} else if (quote_mark === null && (char === '"' || char === "'")) {
