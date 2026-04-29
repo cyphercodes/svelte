@@ -373,11 +373,21 @@ export function check_element(node, context) {
 		}
 	}
 
-	if (!has_spread && handlers.has('mouseover') && !handlers.has('focus')) {
+	if (
+		!has_spread &&
+		handlers.has('mouseover') &&
+		!handlers.has('focus') &&
+		!handlers.has('focusin')
+	) {
 		w.a11y_mouse_events_have_key_events(node, 'mouseover', 'focus');
 	}
 
-	if (!has_spread && handlers.has('mouseout') && !handlers.has('blur')) {
+	if (
+		!has_spread &&
+		handlers.has('mouseout') &&
+		!handlers.has('blur') &&
+		!handlers.has('focusout')
+	) {
 		w.a11y_mouse_events_have_key_events(node, 'mouseout', 'blur');
 	}
 
