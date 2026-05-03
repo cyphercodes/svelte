@@ -19,19 +19,63 @@ const LINE_BREAK_THRESHOLD = 50;
  */
 export function print(ast, options = undefined) {
 	const comments = (ast.type === 'Root' && ast.comments) || [];
+	const ts_visitors = ts({
+		comments,
+		getLeadingComments: options?.getLeadingComments,
+		getTrailingComments: options?.getTrailingComments
+	});
 
 	return esrap.print(
 		ast,
 		/** @type {Visitors<AST.SvelteNode>} */ ({
-			...ts({
-				comments,
-				getLeadingComments: options?.getLeadingComments,
-				getTrailingComments: options?.getTrailingComments
-			}),
+			...ts_visitors,
+			ArrowFunctionExpression(node, context) {
+				const arrow_function =
+					/** @type {typeof node & { typeParameters?: import('estree').Node, returnType?: import('estree').Node }} */ (
+						node
+					);
+
+				if (!arrow_function.typeParameters) {
+					ts_visitors.ArrowFunctionExpression?.(node, context);
+					return;
+				}
+
+				if (arrow_function.async) context.write('async ');
+				context.visit(arrow_function.typeParameters);
+				context.write('(');
+				sequence(arrow_function.params, context);
+				context.write(')');
+				if (arrow_function.returnType) context.visit(arrow_function.returnType);
+				context.write(' => ');
+
+				if (
+					node.body.type === 'ObjectExpression' ||
+					(node.body.type === 'AssignmentExpression' && node.body.left.type === 'ObjectPattern') ||
+					(node.body.type === 'LogicalExpression' && node.body.left.type === 'ObjectExpression') ||
+					(node.body.type === 'ConditionalExpression' && node.body.test.type === 'ObjectExpression')
+				) {
+					context.write('(');
+					context.visit(node.body);
+					context.write(')');
+				} else {
+					context.visit(node.body);
+				}
+			},
 			...svelte_visitors(comments),
 			...css_visitors
 		})
 	);
+}
+
+/**
+ * @param {Array<import('estree').Node>} nodes
+ * @param {Context} context
+ */
+function sequence(nodes, context) {
+	for (const [i, node] of nodes.entries()) {
+		if (i > 0) context.write(', ');
+		context.visit(node);
+	}
 }
 
 /**
