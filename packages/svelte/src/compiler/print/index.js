@@ -19,15 +19,33 @@ const LINE_BREAK_THRESHOLD = 50;
  */
 export function print(ast, options = undefined) {
 	const comments = (ast.type === 'Root' && ast.comments) || [];
+	const ts_visitors = /** @type {any} */ (
+		ts({
+			comments,
+			getLeadingComments: options?.getLeadingComments,
+			getTrailingComments: options?.getTrailingComments
+		})
+	);
 
 	return esrap.print(
 		ast,
 		/** @type {Visitors<AST.SvelteNode>} */ ({
-			...ts({
-				comments,
-				getLeadingComments: options?.getLeadingComments,
-				getTrailingComments: options?.getTrailingComments
-			}),
+			...ts_visitors,
+			ArrowFunctionExpression(node, context) {
+				const arrow = /** @type {any} */ (node);
+
+				if (!arrow.typeParameters) {
+					ts_visitors.ArrowFunctionExpression(node, context);
+					return;
+				}
+
+				if (arrow.async) context.write('async ');
+				context.visit(arrow.typeParameters);
+				ts_visitors.ArrowFunctionExpression(
+					{ ...arrow, async: false, typeParameters: null },
+					context
+				);
+			},
 			...svelte_visitors(comments),
 			...css_visitors
 		})
