@@ -7,3 +7,8 @@
 
 <button {onkeydown}>click me</button>
 <button onkeydown={onkeydown}>click me</button>
+
+<svelte:window
+    {ontouchcancel}
+    {ontouchend}
+/>

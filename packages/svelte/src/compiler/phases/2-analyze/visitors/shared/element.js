@@ -64,14 +64,7 @@ export function validate_element(node, context) {
 					e.attribute_invalid_event_handler(attribute);
 				}
 
-				const value = get_attribute_expression(attribute);
-				if (
-					value.type === 'Identifier' &&
-					value.name === attribute.name &&
-					!context.state.scope.get(value.name)
-				) {
-					w.attribute_global_event_reference(attribute, attribute.name);
-				}
+				warn_on_global_event_reference(attribute, context);
 			}
 
 			if (attribute.name === 'slot') {
@@ -150,6 +143,27 @@ export function validate_element(node, context) {
 					);
 				}
 			}
+		}
+	}
+}
+
+/**
+ * @param {AST.Attribute} attribute
+ * @param {Context} context
+ */
+export function warn_on_global_event_reference(attribute, context) {
+	if (
+		attribute.name.startsWith('on') &&
+		attribute.name.length > 2 &&
+		is_expression_attribute(attribute)
+	) {
+		const value = get_attribute_expression(attribute);
+		if (
+			value.type === 'Identifier' &&
+			value.name === attribute.name &&
+			!context.state.scope.get(value.name)
+		) {
+			w.attribute_global_event_reference(attribute, attribute.name);
 		}
 	}
 }

@@ -3,6 +3,7 @@
 import { disallow_children } from './shared/special-element.js';
 import * as e from '../../../errors.js';
 import { is_event_attribute } from '../../../utils/ast.js';
+import { warn_on_global_event_reference } from './shared/element.js';
 
 /**
  * @param {AST.SvelteWindow} node
@@ -17,6 +18,8 @@ export function SvelteWindow(node, context) {
 			(attribute.type === 'Attribute' && !is_event_attribute(attribute))
 		) {
 			e.illegal_element_attribute(attribute, 'svelte:window');
+		} else if (attribute.type === 'Attribute') {
+			warn_on_global_event_reference(attribute, context);
 		}
 	}
 

@@ -2,6 +2,7 @@
 /** @import { Context } from '../types' */
 import * as e from '../../../errors.js';
 import { is_event_attribute } from '../../../utils/ast.js';
+import { warn_on_global_event_reference } from './shared/element.js';
 import { disallow_children } from './shared/special-element.js';
 
 /**
@@ -16,6 +17,8 @@ export function SvelteBody(node, context) {
 			(attribute.type === 'Attribute' && !is_event_attribute(attribute))
 		) {
 			e.svelte_body_illegal_attribute(attribute);
+		} else if (attribute.type === 'Attribute') {
+			warn_on_global_event_reference(attribute, context);
 		}
 	}
 	context.next();

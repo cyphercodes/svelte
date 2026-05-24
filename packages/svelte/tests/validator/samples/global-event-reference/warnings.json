@@ -22,5 +22,29 @@
 			"column": 29,
 			"line": 9
 		}
+	},
+	{
+		"code": "attribute_global_event_reference",
+		"message": "You are referencing `globalThis.ontouchcancel`. Did you forget to declare a variable with that name?",
+		"start": {
+			"column": 4,
+			"line": 12
+		},
+		"end": {
+			"column": 19,
+			"line": 12
+		}
+	},
+	{
+		"code": "attribute_global_event_reference",
+		"message": "You are referencing `globalThis.ontouchend`. Did you forget to declare a variable with that name?",
+		"start": {
+			"column": 4,
+			"line": 13
+		},
+		"end": {
+			"column": 16,
+			"line": 13
+		}
 	}
 ]
