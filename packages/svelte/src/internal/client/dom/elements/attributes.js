@@ -332,6 +332,12 @@ function set_attributes(
 
 	var setters = get_setters(element);
 
+	// The value setter for text-like inputs strips newlines, but hidden inputs preserve them.
+	// Ensure the browser applies the correct value sanitization mode for spread attributes.
+	if (element.nodeName === INPUT_TAG && 'type' in next && ('value' in next || '__value' in next)) {
+		next = { type: next.type, ...next };
+	}
+
 	// since key is captured we use const
 	for (const key in next) {
 		// let instead of var because referenced in a closure
