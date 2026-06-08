@@ -55,11 +55,22 @@ export function select_option(select, value, mounting = false) {
  * @param {HTMLSelectElement} select
  */
 export function init_select(select) {
-	var observer = new MutationObserver(() => {
-		// @ts-ignore
-		select_option(select, select.__value);
-		// Deliberately don't update the potential binding value,
-		// the model should be preserved unless explicitly changed
+	var observer = new MutationObserver((mutations) => {
+		var should_update = false;
+
+		for (const mutation of mutations) {
+			if (is_option_change(mutation)) {
+				should_update = true;
+				break;
+			}
+		}
+
+		if (should_update) {
+			// @ts-ignore
+			select_option(select, select.__value);
+			// Deliberately don't update the potential binding value,
+			// the model should be preserved unless explicitly changed
+		}
 	});
 
 	observer.observe(select, {
@@ -76,6 +87,36 @@ export function init_select(select) {
 	teardown(() => {
 		observer.disconnect();
 	});
+}
+
+/** @param {MutationRecord} mutation */
+function is_option_change(mutation) {
+	if (mutation.target instanceof Element && mutation.target.closest('option,optgroup')) {
+		return true;
+	}
+
+	for (const node of mutation.addedNodes) {
+		if (contains_option_or_optgroup(node)) {
+			return true;
+		}
+	}
+
+	for (const node of mutation.removedNodes) {
+		if (contains_option_or_optgroup(node)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/** @param {Node} node */
+function contains_option_or_optgroup(node) {
+	if (!(node instanceof Element)) {
+		return false;
+	}
+
+	return node.matches('option,optgroup') || node.querySelector('option,optgroup') !== null;
 }
 
 /**
