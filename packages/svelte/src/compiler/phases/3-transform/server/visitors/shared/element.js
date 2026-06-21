@@ -75,7 +75,11 @@ export function build_element_attributes(node, context, transform) {
 				) {
 					events_to_capture.add(attribute.name);
 				}
-				// the defaultValue/defaultChecked properties don't exist as attributes
+			} else if (attribute.name === 'defaultValue' && node.name === 'input') {
+				attributes.push({ ...attribute, name: 'value' });
+			} else if (attribute.name === 'defaultChecked' && node.name === 'input') {
+				attributes.push({ ...attribute, name: 'checked' });
+				// the defaultValue/defaultChecked properties don't exist as attributes on other elements
 			} else if (attribute.name !== 'defaultValue' && attribute.name !== 'defaultChecked') {
 				if (attribute.name === 'class') {
 					if (attribute.metadata.needs_clsx) {
