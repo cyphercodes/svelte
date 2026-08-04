@@ -8,7 +8,7 @@ const REGEX_ATTRIBUTE_FLAGS = /[a-zA-Z]+/y; // only `i` and `s` are valid today,
 const REGEX_COMBINATOR = /(\+|~|>|\|\|)/y;
 const REGEX_PERCENTAGE = /\d+(\.\d+)?%/y;
 const REGEX_NTH_OF =
-	/(even|odd|\+?(\d+|\d*n(\s*[+-]\s*\d+)?)|-\d*n(\s*\+\s*\d+))((?=\s*[,)])|\s+of\s+)/y;
+	/(even|odd|\+?(\d+|\d*n(\s*[+-]\s*\d+)?)|-\d*n(\s*\+\s*\d+))((?=\s*[,)])|\s+of(?:\s+|(?=[.#[:*])))/y;
 const REGEX_WHITESPACE_OR_COLON = /[\s:]/;
 const REGEX_LEADING_HYPHEN_OR_DIGIT = /-?\d/y;
 const REGEX_VALID_IDENTIFIER_CHAR = /[a-zA-Z0-9_-]/;
